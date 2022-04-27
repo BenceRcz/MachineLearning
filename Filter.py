@@ -111,8 +111,101 @@ def test_mail(path):
     return lnR
 
 
+# This function is going to test the accuracy of the algorithm on the files it was taught on
 def test_test_mails():
-    mails = open()
+    mails = open('rsc/train.txt')
+    mails = mails.readlines()
+    path_ham = "rsc/enron6/ham/"
+    path_spam = "rsc/enron6/spam/"
+    i = 0
+
+    tested_ham = 0; tested_spam = 0
+    missed_ham = 0; missed_spam = 0
+    got_ham = 0; got_spam = 0
+
+    for path in mails:
+        if i < 1053:
+            file = path.split()
+            file_path = path_ham + file[0]
+        else:
+            file = path.split()
+            file_path = path_spam + file[0]
+
+        if i < 1053:
+            if test_mail(file_path) < 0:         # the algorithm got the correct answer
+                got_ham += 1
+            else:
+                missed_ham += 1
+            tested_ham += 1
+        else:
+            if test_mail(file_path) > 0:         # the algorithm got the correct answer
+                got_spam += 1
+            else:
+                missed_spam += 1
+            tested_spam += 1
+
+        i += 1
+
+    print('------------------The results of testing the train files------------------')
+    print('       -Tested:                 ' + str(tested_ham + tested_spam) + ' files')
+    print('       -Tested ham / Got ham:   ' + str(tested_ham) + '  /  ' + str(got_ham))
+    print('       -Got ham:                ' + str(got_ham / tested_ham) + '   %')
+    print('       -Missed ham:             ' + str(1 - got_ham / tested_ham) + ' %')
+    print('       -Tested spam / Got spam: ' + str(tested_spam) + '  /  ' + str(got_spam))
+    print('       -Got spam:               ' + str(got_spam / tested_spam) + '   %')
+    print('       -Missed spam:            ' + str(1 - got_spam / tested_spam) + ' %', end="\n\n")
+    print('------------------Miss percentage: ' + str((missed_ham + missed_ham) / (tested_ham + tested_spam)) + '------------------')
+
+    return
+
+
+def test():
+    mails = open('rsc/test.txt')
+    mails = mails.readlines()
+    path_ham = "rsc/enron6/ham/"
+    path_spam = "rsc/enron6/spam/"
+    i = 0
+
+    tested_ham = 0;
+    tested_spam = 0
+    missed_ham = 0;
+    missed_spam = 0
+    got_ham = 0;
+    got_spam = 0
+
+    for path in mails:
+        if i < 447:
+            file = path.split()
+            file_path = path_ham + file[0]
+        else:
+            file = path.split()
+            file_path = path_spam + file[0]
+
+        if i < 1053:
+            if test_mail(file_path) < 0:  # the algorithm got the correct answer
+                got_ham += 1
+            else:
+                missed_ham += 1
+            tested_ham += 1
+        else:
+            if test_mail(file_path) > 0:  # the algorithm got the correct answer
+                got_spam += 1
+            else:
+                missed_spam += 1
+            tested_spam += 1
+
+        i += 1
+
+    print('------------------The results of testing the test files------------------')
+    print('       -Tested:                 ' + str(tested_ham + tested_spam) + ' files')
+    print('       -Tested ham / Got ham:   ' + str(tested_ham) + '  /  ' + str(got_ham))
+    print('       -Got ham:                ' + str(got_ham / tested_ham) + '   %')
+    print('       -Missed ham:             ' + str(1 - got_ham / tested_ham) + ' %')
+    print('       -Tested spam / Got spam: ' + str(tested_spam) + '  /  ' + str(got_spam))
+    print('       -Got spam:               ' + str(got_spam / tested_spam) + '   %')
+    print('       -Missed spam:            ' + str(1 - got_spam / tested_spam) + ' %', end="\n\n")
+    print('------------------Miss percentage: ' + str(
+        (missed_ham + missed_ham) / (tested_ham + tested_spam)) + '------------------')
     return
 
 
@@ -121,6 +214,7 @@ def main():
     fill_stop_words('rsc/stopwords2.txt')
     train()
     test_test_mails()
+    test()
 
     return
 
