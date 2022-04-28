@@ -10,10 +10,10 @@ dictionary_spam = c.Counter()
 probabilities = c.Counter()
 prob_spam = 0
 prob_ham = 0
-alpha = 0.01
+alpha = 1
 
 # This flag turns the Lidstone smoothing option
-SmoothingFlag = False
+SmoothingFlag = True
 
 
 # The function removes unwanted tokens
@@ -63,7 +63,7 @@ def calculate_probability(dictionary):
 def train():
     global prob_ham, prob_spam, dictionary_ham, dictionary_spam
     nr_of_ham = 0
-    nr_of_spam = 1
+    nr_of_spam = 0
     path_ham = "rsc/enron6/ham/"
     path_spam = "rsc/enron6/spam/"
     i = 0
@@ -119,8 +119,20 @@ def test_mail(path):
             prob1 = 0.0
             prob2 = 0.0
         else:
-            prob1 = log(probabilities[word][1] + 0.000000000000001)
-            prob2 = log(probabilities[word][0] + 0.000000000000001)
+            if not SmoothingFlag:
+                if probabilities[word][0] == 0:
+                    add_0 = 0.000000000000001
+                else:
+                    add_0 = 0
+                if probabilities[word][1] == 0:
+                    add_1 = 0.000000000000001
+                else:
+                    add_1 = 0
+                prob1 = log(probabilities[word][1] + add_1)
+                prob2 = log(probabilities[word][0] + add_0)
+            else:
+                prob1 = log(probabilities[word][1])
+                prob2 = log(probabilities[word][0])
         lnR += word_occurrences[word] * (prob1 - prob2)
 
     return lnR
