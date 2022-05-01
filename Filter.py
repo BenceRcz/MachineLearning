@@ -1,4 +1,4 @@
-# Racz Bence, 523/2
+# Author: Bence Racz
 import collections as c
 from math import log
 
@@ -45,6 +45,7 @@ def fill_stop_words(path):
     return
 
 
+# This function calculates the probability of a word being "spammy" or "hammy"
 def calculate_probability(dictionary):
     sum_ham = sum(c.Counter.values(dictionary_ham))
     sum_spam = sum(c.Counter.values(dictionary_spam))
@@ -138,9 +139,19 @@ def test_mail(path):
     return lnR
 
 
-# This function is going to test the accuracy of the algorithm on the files it was taught on
-def test_test_mails():
-    mails = open('rsc/train.txt')
+# This function returns the name of the test
+def get_test_name(path):
+    aux = path.split('/')
+    aux = aux[len(aux) - 1]
+    aux = aux.split('.')
+    return aux[0]
+
+
+# This function tests a folder filled with emails, the first nr_of_ham are ham emails and the rest spam
+# after the test is completed it prints a statistic on the screen
+def test(path, nr_of_ham):
+    original_path = path
+    mails = open(path)
     mails = mails.readlines()
     path_ham = "rsc/enron6/ham/"
     path_spam = "rsc/enron6/spam/"
@@ -156,14 +167,14 @@ def test_test_mails():
     false_negative = 0
 
     for path in mails:
-        if i < 1053:
+        if i < nr_of_ham:
             file = path.split()
             file_path = path_ham + file[0]
         else:
             file = path.split()
             file_path = path_spam + file[0]
 
-        if i < 1053:
+        if i < nr_of_ham:
             if test_mail(file_path) < 0:  # the algorithm got the correct answer
                 got_ham += 1
             else:
@@ -180,7 +191,9 @@ def test_test_mails():
 
         i += 1
 
-    print('------------------The results of testing the train files------------------')
+    test_name = get_test_name(original_path)
+
+    print('------------------The results of testing the ' + test_name + ' files------------------')
     print('       -Tested:                 ' + str(tested_ham + tested_spam) + ' files')
     print('       -Tested ham / Got ham:   ' + str(tested_ham) + '  /  ' + str(got_ham))
     print('       -Got ham:                ' + str(got_ham / tested_ham) + '   %')
@@ -197,70 +210,12 @@ def test_test_mails():
     return
 
 
-# This fucntion test the algorithm on unknown emails
-def test():
-    mails = open('rsc/test.txt')
-    mails = mails.readlines()
-    path_ham = "rsc/enron6/ham/"
-    path_spam = "rsc/enron6/spam/"
-    i = 0
-
-    tested_ham = 0
-    tested_spam = 0
-    missed_ham = 0
-    missed_spam = 0
-    got_ham = 0
-    got_spam = 0
-    false_positive = 0
-    false_negativ = 0
-
-    for path in mails:
-        if i < 447:
-            file = path.split()
-            file_path = path_ham + file[0]
-        else:
-            file = path.split()
-            file_path = path_spam + file[0]
-
-        if i < 447:
-            if test_mail(file_path) < 0:  # the algorithm got the correct answer
-                got_ham += 1
-            else:
-                missed_ham += 1
-                false_positive += 1
-            tested_ham += 1
-        else:
-            if test_mail(file_path) > 0:  # the algorithm got the correct answer
-                got_spam += 1
-            else:
-                missed_spam += 1
-                false_negativ += 1
-            tested_spam += 1
-
-        i += 1
-
-    print('------------------The results of testing the test files-------------------')
-    print('       -Tested:                 ' + str(tested_ham + tested_spam) + ' files')
-    print('       -Tested ham / Got ham:   ' + str(tested_ham) + '  /  ' + str(got_ham))
-    print('       -Got ham:                ' + str(got_ham / tested_ham) + '   %')
-    print('       -Missed ham:             ' + str(1 - got_ham / tested_ham) + ' %')
-    print('       -Missed ham:                ' + str(tested_ham - got_ham))
-    print('       -Tested spam / Got spam: ' + str(tested_spam) + '  /  ' + str(got_spam))
-    print('       -Got spam:               ' + str(got_spam / tested_spam) + '   %')
-    print('       -Missed spam:               ' + str(tested_spam - got_spam))
-    print('       -Missed spam:            ' + str(1 - got_spam / tested_spam) + ' %')
-    print('       -False_positive / false_negative: ' + str(false_positive / false_negativ), end="\n\n")
-    print('------------------Miss percentage: ' + str(
-        (missed_ham + missed_ham) / (tested_ham + tested_spam) * 100) + '--------------------')
-    return
-
-
 def main():
     fill_stop_words('rsc/stopwords.txt')
     fill_stop_words('rsc/stopwords2.txt')
     train()
-    test_test_mails()
-    test()
+    test('rsc/train.txt', 1053)
+    test('rsc/test.txt', 447)
 
     return
 
