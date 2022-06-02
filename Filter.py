@@ -13,25 +13,26 @@ prob_ham = 0
 alpha = 1
 
 # This flag turns the Lidstone smoothing option
+# True = ON
+# False = OFF
 SmoothingFlag = True
 
 
-# The function removes unwanted tokens
+# The function removes specific tokens from the text
+def remove(text, tokens):
+    j = 0
+    while j < len(text):
+        if text[j] in tokens:
+            text.remove(text[j])
+        else:
+            j += 1
+    return text
+
+
+# The function removes all unwanted tokens
 def remove_tokens(text):
-    j = 0
-    while j < len(text):
-        if text[j] in punctuation_tokens:
-            text.remove(text[j])
-        else:
-            j += 1
-
-    j = 0
-    while j < len(text):
-        if text[j] in stop_words:
-            text.remove(text[j])
-        else:
-            j += 1
-
+    text = remove(text, punctuation_tokens)
+    text = remove(text, stop_words)
     return text
 
 
